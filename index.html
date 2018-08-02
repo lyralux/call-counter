@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+
+    <title>Hello, world!</title>
+  </head>
+  <body>
+    <!--
+  Bootstrap docs: https://getbootstrap.com/docs
+-->
+
+<div class="container">
+  <div class="row">
+  <div class="col">
+    <table class="table" style="table-layout:fixed">
+      <thead class="thead-dark">
+        <tr>
+          <th scope="col">Transfers</th>
+          <th scope="col">Contacted</th>
+          <th scope="col">Total Calls</th>
+          <th scope="col" class="text-right">%</th>
+        </tr>
+      </thead>
+      <tbody class="table-light">
+        <tr>
+          <td id="transferDisp">0</td>
+          <td id="contactedDisp">0</td>
+          <td id="totalDisp">0</td>
+          <td id="percentageDisp" class="text-right">0</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </div>
+  <div class="row bg-light py-3">
+    <div class="col">
+      <button id="btnTransfer" class="btn btn-block btn-primary">
+        TRANSFER
+      </button>
+    </div>
+    <div class="col">
+      <button id="btnContacted" class="btn btn-block btn-warning">
+        CONTACTED
+      </button>
+    </div>
+    <div class="col">
+      <button id="btnNoContact" class="btn btn-block btn-danger">NO CONTACT</button>
+    </div>
+    <div class="col col-2">
+      <button id="btnReset" class="btn btn-block btn-default">RESET</button>
+    </div>
+  </div>
+</div>
+
+
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $(function(){
+          var count = {
+            totalCalls:  0,
+            totalContacted: 0,
+            totalTransfers: 0
+          };
+
+          var percent = 0;
+
+          // find elements
+          var test = $("#test");
+          var transferBtn = $("#btnTransfer");
+          var contactedBtn = $("#btnContacted");
+          var notContactedBtn = $("#btnNoContact");
+          var resetBtn = $("#btnReset");
+
+        var transferDisplay = $("#transferDisp");
+        var contactedDisplay = $("#contactedDisp");
+        var totalDisplay = $("#totalDisp");
+        var percentageDisp = $("#percentageDisp");
+
+        function reset() {
+          count = {
+            totalCalls: 0,
+            totalContacted: 0,
+            totalTransfers: 0
+          }
+          percent = 0;
+
+          updateDisplay();
+          updatePercent();
+
+        }
+
+        function updatePercent() {
+          if(count.totalCalls) {
+            percent = (count.totalTransfers/count.totalCalls*100).toFixed(2);
+          }
+
+          percentageDisp.html(percent);
+        }
+
+        function updateDisplay() {
+      	   transferDisplay.html(count.totalTransfers);
+           contactedDisplay.html(count.totalContacted);
+           totalDisplay.html(count.totalCalls);
+           updatePercent();
+         }
+
+         function updateCount(x) {
+           count.totalCalls += 1;
+
+           console.log(x);
+
+           if (typeof x !== "undefined") {
+             if(x) {
+               count.totalTransfers += 1;
+               count.totalContacted += 1;
+             } else {
+               count.totalContacted += 1;
+             }
+           }
+
+             // console.log('yes');
+
+
+           // if (x)  {
+           //
+           //   count.totalTransfers += 1;
+           //   count.totalContacted += 1;
+           //   console.log("true");
+           // } else if (false) {
+           //   count.totalContacted += 1;
+           //   console.log('false');
+           // } else {
+           //   console.log('neither');
+           // }
+
+
+         }
+
+         resetBtn.on("click", function() {
+           reset();
+         })
+         notContactedBtn.on("click", function() {
+           updateCount();
+           updateDisplay();
+
+         });
+
+         contactedBtn.on("click", function() {
+           updateCount(false);
+           updateDisplay();
+         });
+
+      // handle click and add class
+        transferBtn.on("click", function(){
+
+           updateCount(true);
+
+           updateDisplay();
+         });
+      });
+    </script>
+  </body>
+</html>
