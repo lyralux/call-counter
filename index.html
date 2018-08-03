@@ -84,7 +84,7 @@
         				return localStorage.setItem(namespace, JSON.stringify(data));
         			} else {
         				var store = localStorage.getItem(namespace);
-        				return (store && JSON.parse(store)) || { count: { totalCalls:0, totalContacted:0, totalTransfer: 0}, totalCount: { totalCalls: 0, totalContacted: 0, totalTransfer: 0}};
+        				return (store && JSON.parse(store)) || { count: { totalCalls:0, totalContacted:0, totalTransfers: 0}, totalCount: { totalCalls: 0, totalContacted: 0, totalTransfers: 0}};
         			}
         		}
         	};
@@ -110,6 +110,8 @@
               this.totalPercent = 0;
 
               this.bindEvents();
+              
+              this.render();
             },
             bindEvents: function() {
               $('.call-btn').on('click', this.updateCount.bind(this));
