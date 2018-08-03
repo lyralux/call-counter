@@ -152,6 +152,8 @@
               $('#tTotalDisp').html(this.totalCount.totalCalls);
               $('#tPercentageDisp').html(this.totalPercent);
 
+              util.store('call-count', {count: this.count, totalCount: this.totalCount});
+
             }
           }
 
