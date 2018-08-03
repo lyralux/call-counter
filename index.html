@@ -36,11 +36,12 @@
         </div>
         <div class="col-2">
           <button id="startGoal" class="btn btn-sm btn-primary">start</button>
+          <button id="stopGoal" class="btn btn-sm btn-danger">stop</button>
           <button id="btnReset" class="btn btn-sm btn-default">restart</button>
         </div>
         <div class="col-2">
           <p class="lead m-0" id="timer">
-            30:01
+            00:00:00
           </p>
           <!-- <button id="btnResetAll" class="btn btn-sm btn-default float-right">restart</button> -->
         </div>
@@ -198,6 +199,7 @@
               $('#btnResetAll').on('click', this.resetAll.bind(this));
               $('#startGoal').on('click', this.startGoal.bind(this));
               $('#goal').on('keyup', this.setGoal.bind(this));
+              $('#stopGoal').on('click', this.stopGoal.bind(this));
               // this.time.on('change', this.updateTime.bind(this));
             },
             setGoal: function(e) {
@@ -227,7 +229,7 @@
                 return
               }
 
-              this.time = 5
+              this.time = 3600
               this.goalStarted = true;
 
               console.log(this.time)
@@ -312,6 +314,8 @@
                 totalContacted: 0,
                 totalTransfers: 0
               };
+
+              this.timer = clearInterval(this.timer);
               this.render();
 
             },
