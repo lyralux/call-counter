@@ -36,8 +36,7 @@
         </div>
         <div class="col-2">
           <button id="startGoal" class="btn btn-sm btn-primary">start</button>
-          <button id="stopGoal" class="btn btn-sm btn-danger">stop</button>
-          <button id="btnReset" class="btn btn-sm btn-default">restart</button>
+          <button id="btnReset" class="btn btn-sm btn-default" disabled>reset</button>
         </div>
         <div class="col-2">
           <p class="lead m-0" id="timer">
@@ -194,11 +193,11 @@
             bindEvents: function() {
               $('.call-btn').on('click', this.updateCount.bind(this));
               $('#btnReset').on('click', this.reset.bind(this));
-              $('#btnReset').on('click', this.startGoal.bind(this));
+              $('#btnReset').on('click', this.stopGoal.bind(this));
               $('#btnResetAll').on('click', this.resetAll.bind(this));
               $('#startGoal').on('click', this.startGoal.bind(this));
               $('#goal').on('keyup', this.setGoal.bind(this));
-              $('#stopGoal').on('click', this.stopGoal.bind(this));
+              // $('#stopGoal').on('click', this.stopGoal.bind(this));
               // this.time.on('change', this.updateTime.bind(this));
             },
             setGoal: function(e) {
@@ -228,6 +227,10 @@
                 return
               }
 
+              $('#startGoal').prop({disabled: true})
+              $('#btnReset').prop('disabled', false)
+              // this.stopGoal();
+
               this.time = 3600
               this.goalStarted = true;
 
@@ -242,8 +245,9 @@
               }
             },
             stopGoal: function() {
-              this.timer = clearInterval(this.timer);
-              this.alert();
+              $('#startGoal').prop('disabled', false)
+              $('#btnReset').prop('disabled', true)
+              // this.alert();
             },
             updateCount: function(e) {
               var x = $(e.target).attr('name');
@@ -308,6 +312,8 @@
                 this.isReset = true;
                 this.renderTotals()
               }
+
+              this.alert();
               this.count = {
                 totalCalls: 0,
                 totalContacted: 0,
@@ -335,107 +341,6 @@
           }
 
           App.init();
-          var count = {
-            totalCalls:  0,
-            totalContacted: 0,
-            totalTransfers: 0
-          };
-
-          var percent = 0;
-
-          // find elements
-          var test = $("#test");
-          var transferBtn = $("#btnTransfer");
-          var contactedBtn = $("#btnContacted");
-          var notContactedBtn = $("#btnNoContact");
-          var resetBtn = $("#btnReset");
-
-        var transferDisplay = $("#transferDisp");
-        var contactedDisplay = $("#contactedDisp");
-        var totalDisplay = $("#totalDisp");
-        var percentageDisp = $("#percentageDisp");
-
-        function reset() {
-          count = {
-            totalCalls: 0,
-            totalContacted: 0,
-            totalTransfers: 0
-          }
-          percent = 0;
-
-          updateDisplay();
-          updatePercent();
-
-        }
-
-        function updatePercent() {
-          if(count.totalCalls) {
-            percent = (count.totalTransfers/count.totalCalls*100).toFixed(2);
-          }
-
-          percentageDisp.html(percent);
-        }
-
-        function updateDisplay() {
-      	   transferDisplay.html(count.totalTransfers);
-           contactedDisplay.html(count.totalContacted);
-           totalDisplay.html(count.totalCalls);
-           updatePercent();
-         }
-
-         function updateCount(x) {
-           count.totalCalls += 1;
-
-           console.log(x);
-
-           if (typeof x !== "undefined") {
-             if(x) {
-               count.totalTransfers += 1;
-               count.totalContacted += 1;
-             } else {
-               count.totalContacted += 1;
-             }
-           }
-
-             // console.log('yes');
-
-
-           // if (x)  {
-           //
-           //   count.totalTransfers += 1;
-           //   count.totalContacted += 1;
-           //   console.log("true");
-           // } else if (false) {
-           //   count.totalContacted += 1;
-           //   console.log('false');
-           // } else {
-           //   console.log('neither');
-           // }
-
-
-         }
-
-      //    resetBtn.on("click", function() {
-      //      reset();
-      //    })
-      //    notContactedBtn.on("click", function() {
-      //      updateCount();
-      //      updateDisplay();
-      //
-      //    });
-      //
-      //    contactedBtn.on("click", function() {
-      //      updateCount(false);
-      //      updateDisplay();
-      //    });
-      //
-      // // handle click and add class
-      //   transferBtn.on("click", function(){
-      //
-      //      updateCount(true);
-      //
-      //      updateDisplay();
-      //    });
       });
     </script>
   </body>
