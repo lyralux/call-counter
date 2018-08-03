@@ -9,6 +9,17 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
     <title>Call Tracker</title>
+    <style type="text/css">
+      .total-row {
+        visibility: collapse;
+      }
+      .goal-alert .alert {
+        font-size: 80%;
+      }
+      .goal-alert .close {
+          font-size: 1rem;
+      }
+    </style>
   </head>
   <body>
     <!--
@@ -17,7 +28,30 @@
 
 <div class="container">
   <div class="row">
-  <div class="col bg-light pt-3">
+    <div class="col bg-light pt-3">
+      <div class="form-group row">
+
+        <div class="col-2">
+          <input type="number" class="form-control form-control-sm" id="goal" placeholder="Goal">
+        </div>
+        <div class="col-2">
+          <button id="startGoal" class="btn btn-sm btn-primary">start</button>
+          <button id="btnReset" class="btn btn-sm btn-default">restart</button>
+        </div>
+        <div class="col-2">
+          <p class="lead m-0" id="timer">
+            30:01
+          </p>
+          <!-- <button id="btnResetAll" class="btn btn-sm btn-default float-right">restart</button> -->
+        </div>
+        <div class="col goal-alert">
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+  <div class="col bg-light">
     <table class="table table-sm mb-0" style="table-layout:fixed">
       <thead class="thead-dark">
         <tr>
@@ -35,7 +69,7 @@
           <td id="percentageDisp" class="text-right">0</td>
         </tr>
       </tbody>
-      <tfoot class="table-active invisible">
+      <tfoot id="totalRow" class="total-row table-active">
         <tr>
           <th id="tTransferDisp">0</th>
           <th id="tContactedDisp">0</th>
@@ -48,25 +82,44 @@
   </div>
   <div class="row bg-light py-3">
     <div class="col">
-      <button name="transfer" id="btnTransfer" class="btn btn-block btn-primary call-btn">
+      <button name="transfer" id="btnTransfer" class="btn btn-block btn-sm btn-primary call-btn">
         TRANSFER
       </button>
     </div>
     <div class="col">
-      <button id="btnContacted" name="contacted" class="btn btn-block btn-warning call-btn">
+      <button id="btnContacted" name="contacted" class="btn btn-block btn-sm btn-warning call-btn">
         CONTACTED
       </button>
     </div>
     <div class="col">
-      <button id="btnNoContact" name="noContact" class="btn btn-block btn-danger call-btn">NO CONTACT</button>
+      <button id="btnNoContact" name="noContact" class="btn btn-block btn-sm btn-danger call-btn">NO CONTACT</button>
     </div>
     <div class="col col-2">
-      <button id="btnReset" name="reset" class="btn btn-block btn-default call-btn">RESET</button>
+      <button id="btnResetAll" class="btn btn-block btn-sm btn-default">RESET</button>
     </div>
   </div>
 </div>
 
+  <script id="alert-template" type="text/x-handlebars-template">
+		{{#this}}
+      {{#if success}}
+      <div class="alert alert-success m-0 py-1 alert-dismissible fade show" role="alert">
+        <strong>Congrats!</strong> Goal Achieved
+        <button type="button" class="close p-1" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{else}}
+      <div class="alert alert-warning m-0 py-1 alert-dismissible fade show" role="alert">
+        <strong>Opps!</strong> Try again
+        <button type="button" class="close p-1" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {{/if}}
 
+		{{/this}}
+	</script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -75,8 +128,25 @@
     <script src=" https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
     <script type="text/javascript">
+    Number.prototype.toHHMMSS = function () {
+        var sec_num = parseInt(this, 10); // don't forget the second param
+        var hours   = Math.floor(sec_num / 3600);
+        var minutes = Math.floor((sec_num - (hours * 3600)) / 60);
+        var seconds = sec_num - (hours * 3600) - (minutes * 60);
+
+        if (hours   < 10) {hours   = "0"+hours;}
+        if (minutes < 10) {minutes = "0"+minutes;}
+        if (seconds < 10) {seconds = "0"+seconds;}
+        return hours+':'+minutes+':'+seconds;
+    }
         $(function(){
+
+          Handlebars.registerHelper('eq', function (a, b, options) {
+          		return a === b ? options.fn(this) : options.inverse(this);
+          	});
+
 
           var util = {
         		store: function (namespace, data) {
@@ -84,7 +154,7 @@
         				return localStorage.setItem(namespace, JSON.stringify(data));
         			} else {
         				var store = localStorage.getItem(namespace);
-        				return (store && JSON.parse(store)) || { count: { totalCalls:0, totalContacted:0, totalTransfers: 0}, totalCount: { totalCalls: 0, totalContacted: 0, totalTransfers: 0}};
+        				return (store && JSON.parse(store)) || { count: { totalCalls:0, totalContacted:0, totalTransfers: 0}, totalCount: { totalCalls: 0, totalContacted: 0, totalTransfers: 0}, isReset: false};
         			}
         		}
         	};
@@ -101,20 +171,78 @@
               //   totalContacted: 0,
               //   totalTransfers: 0
               // }
+
               var store = util.store('call-count');
 
               console.log(store);
+              this.goal = 0;
+              this.goalStarted = false;
+              this.alertTemplate = Handlebars.compile($('#alert-template').html());
+              this.time = 3600;
               this.count = store.count;
               this.totalCount = store.totalCount;
+
               this.percent = 0;
               this.totalPercent = 0;
 
+              this.isReset = store.isReset;
+
               this.bindEvents();
-              this.updatePercent();
+              // this.updatePercent();
               this.render();
             },
             bindEvents: function() {
               $('.call-btn').on('click', this.updateCount.bind(this));
+              $('#btnReset').on('click', this.reset.bind(this));
+              $('#btnReset').on('click', this.startGoal.bind(this));
+              $('#btnResetAll').on('click', this.resetAll.bind(this));
+              $('#startGoal').on('click', this.startGoal.bind(this));
+              $('#goal').on('keyup', this.setGoal.bind(this));
+              // this.time.on('change', this.updateTime.bind(this));
+            },
+            setGoal: function(e) {
+                var $input = $(e.target);
+			          var val = $input.val().trim();
+
+
+                this.goal = val;
+
+                console.log(this.goal)
+            },
+            startTimer: function() {
+              if(this.time == 0) {
+                this.stopGoal();
+              } else {
+                this.time = this.time-1;
+                $('#timer').html(this.time.toHHMMSS());
+
+              }
+            },
+            updateTime: function() {
+
+
+            },
+            startGoal: function() {
+              if(!this.goal) {
+                return
+              }
+
+              this.time = 5
+              this.goalStarted = true;
+
+              console.log(this.time)
+              this.timer = setInterval(this.startTimer.bind(this), 1000);
+            },
+            alert: function() {
+              if(this.goal <= this.count.totalTransfers) {
+                $('.goal-alert').html(this.alertTemplate({success: true}))
+              } else {
+                $('.goal-alert').html(this.alertTemplate({success: false}))
+              }
+            },
+            stopGoal: function() {
+              this.timer = clearInterval(this.timer);
+              this.alert();
             },
             updateCount: function(e) {
               var x = $(e.target).attr('name');
@@ -133,14 +261,26 @@
               }
               this.count.totalCalls += 1;
               this.totalCount.totalCalls += 1;
-              this.updatePercent();
+              // this.updatePercent();
               this.render();
             },
             updatePercent: function() {
-              this.percent = (this.count.totalTransfers/this.count.totalCalls*100).toFixed(2);
-              this.totalPercent = (this.totalCount.totalTransfers/this.totalCount.totalCalls*100).toFixed(2);
+
+              if(this.count.totalCalls) {
+                this.percent = (this.count.totalTransfers/this.count.totalCalls*100).toFixed(2);
+              } else {
+                this.percent = 0;
+              }
+              if(this.totalCount.totalCalls) {
+                this.totalPercent = (this.totalCount.totalTransfers/this.totalCount.totalCalls*100).toFixed(2);
+              } else {
+                this.totalPercent = 0;
+              }
+
+
             },
             render: function() {
+              this.updatePercent();
 
               $('#transferDisp').html(this.count.totalTransfers);
               $('#contactedDisp').html(this.count.totalContacted);
@@ -152,8 +292,42 @@
               $('#tTotalDisp').html(this.totalCount.totalCalls);
               $('#tPercentageDisp').html(this.totalPercent);
 
-              util.store('call-count', {count: this.count, totalCount: this.totalCount});
+              if(this.isReset) {
+                this.renderTotals();
+              }
 
+              util.store('call-count', {count: this.count, totalCount: this.totalCount, isReset: this.isReset});
+
+            },
+            renderTotals: function() {
+                $('#totalRow').addClass('visible');
+            },
+            reset: function() {
+              if (!this.isReset) {
+                this.isReset = true;
+                this.renderTotals()
+              }
+              this.count = {
+                totalCalls: 0,
+                totalContacted: 0,
+                totalTransfers: 0
+              };
+              this.render();
+
+            },
+            resetAll: function() {
+              this.count = {
+                totalCalls: 0,
+                totalContacted: 0,
+                totalTransfers: 0
+              };
+              this.totalCount = {
+                totalCalls: 0,
+                totalContacted: 0,
+                totalTransfers: 0
+              };
+              this.isReset = false;
+              this.render();
             }
           }
 
