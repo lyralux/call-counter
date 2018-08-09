@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="main.css">
 
     <title>Call Tracker</title>
     <style type="text/css">
@@ -22,10 +22,30 @@
     </style>
   </head>
   <body>
-    <!--
-  Bootstrap docs: https://getbootstrap.com/docs
--->
+    <div class="collapse bg-inverse" id="navbarHeader">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-8 py-4">
+                    <h4 class="">About</h4>
+                    <p class="text-muted">Just a simple call counter app</p>
+                  </div>
+                <div class="col-sm-4 py-4">
+                    <h4 class="">More Info</h4>
 
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="navbar navbar-dark navbar-sm bg-dark">
+        <div class="container d-flex justify-content-between">
+            <a href="#" class="navbar-brand">Call Counter</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+    </div>
+
+<div class="section">
 <div class="container">
   <div class="row">
     <div class="col bg-light pt-3">
@@ -35,7 +55,7 @@
         </div>
         <div class="col-2">
           <button id="startGoal" class="btn btn-sm btn-primary">start</button>
-          <button id="btnReset" class="btn btn-sm btn-default" disabled>reset</button>
+          <button id="btnReset" class="btn btn-sm btn-default">reset</button>
         </div>
         <div class="col-2">
           <p class="lead m-0" id="timer">
@@ -49,7 +69,7 @@
     </div>
   </div>
   <div class="row">
-  <div class="col bg-light">
+    <div class="col bg-light">
     <table class="table table-sm mb-0" style="table-layout:fixed">
       <thead class="thead-dark">
         <tr>
@@ -76,7 +96,7 @@
         </tr>
       <tfoot>
     </table>
-  </div>
+    </div>
   </div>
   <div class="row bg-light py-3">
     <div class="col">
@@ -97,8 +117,9 @@
     </div>
   </div>
 </div>
+</div>
 
-  <script id="alert-template" type="text/x-handlebars-template">
+<script id="alert-template" type="text/x-handlebars-template">
 		{{#this}}
       {{#if success}}
       <div class="alert alert-success m-0 py-1 alert-dismissible fade show" role="alert">
@@ -117,7 +138,7 @@
       {{/if}}
 
 		{{/this}}
-	</script>
+ </script>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -191,8 +212,9 @@
             },
             bindEvents: function() {
               $('.call-btn').on('click', this.updateCount.bind(this));
-              $('#btnReset').on('click', this.reset.bind(this));
               $('#btnReset').on('click', this.stopGoal.bind(this));
+              $('#btnReset').on('click', this.reset.bind(this));
+
               $('#btnResetAll').on('click', this.resetAll.bind(this));
               $('#startGoal').on('click', this.startGoal.bind(this));
               $('#goal').on('keyup', this.setGoal.bind(this));
@@ -227,7 +249,7 @@
               }
 
               $('#startGoal').prop({disabled: true})
-              $('#btnReset').prop('disabled', false)
+
               // this.stopGoal();
 
               this.time = 3600
@@ -244,9 +266,8 @@
               }
             },
             stopGoal: function() {
-              $('#startGoal').prop('disabled', false)
-              $('#btnReset').prop('disabled', true)
-              // this.alert();
+              $('#startGoal').prop('disabled', false);
+              this.alert();
             },
             updateCount: function(e) {
               var x = $(e.target).attr('name');
@@ -312,7 +333,7 @@
                 this.renderTotals()
               }
 
-              this.alert();
+
               this.count = {
                 totalCalls: 0,
                 totalContacted: 0,
